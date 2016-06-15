@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="north_south_stations">
+        <item>Airport</item>
+        <item>Arts Center</item>
+        <item>Brookhaven/Oglethorpe</item>
+        <item>Buckhead</item>
+        <item>Chamblee</item>
+        <item>Civic Center</item>
+        <item>College Park</item>
+        <item>Doraville</item>
+        <item>Dunwoody</item>
+        <item>East Point</item>
+        <item>Five Points</item>
+        <item>Garnett</item>
+        <item>Lakewood/Ft.McPherson</item>
+        <item>Lenox</item>
+        <item>Lindbergh Center</item>
+        <item>Medical Center</item>
+        <item>Midtown</item>
+        <item>North Avenue</item>
+        <item>North Springs</item>
+        <item>Oakland City</item>
+        <item>Peachtree Center</item>
+        <item>Sandy Springs</item>
+        <item>West End</item>
+    </string-array>
+    <string-array name="east_west_stations">
+        <item>Ashby</item>
+        <item>Avondale</item>
+        <item>Bankhead</item>
+        <item>Decatur</item>
+        <item>Dome/GWCC/Phillips/CNN</item>
+        <item>East Lake</item>
+        <item>Edgewood/Candler Park</item>
+        <item>Five Points</item>
+        <item>Georgia State</item>
+        <item>Hamilton E. Holmes</item>
+        <item>Indian Creek</item>
+        <item>Innman Park/Reynoldstown</item>
+        <item>Kensington</item>
+        <item>King Memorial</item>
+        <item>Vine City</item>
+        <item>West Lake</item>
+        <item></item>
+        <item></item>
+    </string-array>
+</resources>

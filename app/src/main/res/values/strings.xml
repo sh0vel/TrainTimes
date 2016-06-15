@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">TrainTimes</string>
+    <string name="title_activity_top_trains">TopTrainsActivity</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_all_trains">AllTrainsActivity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
