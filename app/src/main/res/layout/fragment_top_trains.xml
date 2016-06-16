@@ -9,5 +9,11 @@
     tools:context=".TopTrainsFragment"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+    <TextView
+        android:id="@+id/tv_station_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="text"
+        android:layout_gravity="center_vertical"/>
 
 </LinearLayout>

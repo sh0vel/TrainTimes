@@ -20,7 +20,7 @@ public class AllTrainsFragment extends Fragment {
     public static final int PAGE_NORTHSOUTH = 1;
     public static final int PAGE_EASTWEST = 2;
 
-    private static final String ARG_STATIONS = "param1";
+    private static final String ARG_PAGE_NUM = "param1";
 
     private int page;
 
@@ -33,9 +33,8 @@ public class AllTrainsFragment extends Fragment {
     public static AllTrainsFragment newInstance(int page) {
         AllTrainsFragment fragment = new AllTrainsFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_STATIONS, page);
+        args.putInt(ARG_PAGE_NUM, page);
         fragment.setArguments(args);
-        fragment.getTag();
         return fragment;
     }
 
@@ -43,7 +42,7 @@ public class AllTrainsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            page = getArguments().getInt(ARG_STATIONS);
+            page = getArguments().getInt(ARG_PAGE_NUM);
         }
     }
 
@@ -64,15 +63,6 @@ public class AllTrainsFragment extends Fragment {
                 if (dy < 0)
                     showFAB();
             }
-
-//            @Override
-//            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-//
-//                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE){
-//                    showFAB();
-//                }
-//                super.onScrollStateChanged(recyclerView, newState);
-//            }
         });
         return recyclerView;
     }
@@ -158,10 +148,11 @@ public class AllTrainsFragment extends Fragment {
         super.onAttach(context);
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
         }
+// else {
+//            throw new RuntimeException(context.toString()
+//                    + " must implement OnFragmentInteractionListener");
+//        }
     }
 
     @Override
@@ -171,7 +162,6 @@ public class AllTrainsFragment extends Fragment {
     }
 
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void listItemSelected(View view, String station);
         void hideFAB();
         void showFAB();

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.app.shovonh.traintimes.Data.DBContract.StationEntry;
 
@@ -18,7 +19,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String LOG_TAG = DBHelper.class.getSimpleName();
 
     public static final int DATABASE_VERSION = 1;
-    static final String DATABASE_NAME = "traintimes.db";
+    public static final String DATABASE_NAME = "traintimes.db";
 
 
     public DBHelper(Context context) {
@@ -32,6 +33,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 StationEntry._ID + " INTEGER PRIMARY KEY, " +
                 StationEntry.COLUMN_STATION_NAME + " TEXT UNIQUE NOT NULL" +
                 " );";
+
+        sqLiteDatabase.execSQL(SQL_CREATE_STATION_TABLE);
     }
 
     @Override
@@ -41,6 +44,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public void insertData(String stationName) {
+        Log.v(LOG_TAG, stationName);
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -64,9 +68,26 @@ public class DBHelper extends SQLiteOpenHelper {
         return stations;
     }
 
-    public void deleteEnrty(String name) {
+    public String getByID(int id){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT " + StationEntry.COLUMN_STATION_NAME +
+                " FROM " + StationEntry.TABLE_NAME + " WHERE _id =?", new String[]{String.valueOf(id)});
+        cursor.moveToNext();
+        Log.v(LOG_TAG, cursor.getString(cursor.getColumnIndex(StationEntry.COLUMN_STATION_NAME)));
+        return cursor.getString(cursor.getColumnIndex(StationEntry.COLUMN_STATION_NAME));
+
+    }
+
+    public void deleteEntry(String name) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(StationEntry.TABLE_NAME, StationEntry.COLUMN_STATION_NAME + " = ?", new String[]{name});
         db.close();
+    }
+
+    public void deleteAll(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DELETE FROM " + StationEntry.TABLE_NAME);
+        db.close();
+        Log.v(LOG_TAG, "" + getAllStations().size());
     }
 }
