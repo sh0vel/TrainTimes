@@ -11,6 +11,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.app.shovonh.traintimes.Data.DBHelper;
@@ -23,6 +25,7 @@ public class TopTrainsActivity extends AppCompatActivity implements FetchTrainTi
     public static final String LOG_TAG = TopTrainsActivity.class.getSimpleName();
 
     ArrayList<String> savedStationNames;
+    String currentStationFrag; //set when during fragments onResume function via listner
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,5 +105,22 @@ public class TopTrainsActivity extends AppCompatActivity implements FetchTrainTi
     @Override
     public void onFetchCompete(ArrayList<TrainStop> trainStops) {
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_top_trains, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id){
+            case R.id.action_map:break;
+            case R.id.action_nav:break;
+            case R.id.action_settings:break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

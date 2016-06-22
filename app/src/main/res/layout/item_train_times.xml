@@ -1,48 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/card"
-    android:layout_width="150dp"
-    android:layout_height="160dp"
-    android:layout_marginLeft="@dimen/activity_horizontal_margin"
-    android:layout_marginRight="@dimen/activity_vertical_margin"
-    android:layout_marginTop="@dimen/activity_vertical_margin"
-    android:elevation="@dimen/cardview_default_elevation">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginBottom="@dimen/activity_vertical_margin"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:orientation="vertical">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/train_color_bg"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@color/goldLine"
+            android:orientation="vertical"
+            android:padding="8dp">
+
+            <TextView
+                android:id="@+id/train_direction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:text="Northbound"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                android:textColor="@color/mtrl_white" />
+
+            <TextView
+                android:id="@+id/train_final_stop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:text="Doraville"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+
+            <TextView
+                android:id="@+id/train_line_color"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:text="Gold line"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+
+
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/direction"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:text="North"
-            android:textAppearance="@style/MaterialTextAppearance.Headline" />
+            android:id="@+id/train_time_remaining"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="16 min"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
 
-        <View
-            android:id="@+id/line_color"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginBottom="@dimen/divider_space"
-            android:layout_marginLeft="@dimen/mtrl_keyline_extra"
-            android:layout_marginRight="@dimen/mtrl_keyline_extra"
-            android:layout_marginTop="@dimen/divider_space"
-            android:background="@color/goldLine" />
-
-        <TextView
-            android:id="@+id/time_arrival"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:text="4 mins"
-            android:textAppearance="@style/MaterialTextAppearance.Subhead"
-            android:textColor="@android:color/secondary_text_light" />
     </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/goldLine" />
 
 
-</android.support.v7.widget.CardView>
+</LinearLayout>

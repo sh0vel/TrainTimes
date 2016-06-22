@@ -8,4 +8,7 @@
     <color name="redLine">#C62828</color>
     <color name="greenLine">#4CAF50</color>
     <color name="blueLine">#2196F3</color>
+
+    <color name="detail_accent_label">#90A4AE</color>
+    <color name="detail_accent_pane_background">#455A64</color>
 </resources>

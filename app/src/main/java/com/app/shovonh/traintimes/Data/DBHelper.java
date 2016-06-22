@@ -73,7 +73,6 @@ public class DBHelper extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery("SELECT " + StationEntry.COLUMN_STATION_NAME +
                 " FROM " + StationEntry.TABLE_NAME + " WHERE _id =?", new String[]{String.valueOf(id)});
         cursor.moveToNext();
-        Log.v(LOG_TAG, cursor.getString(cursor.getColumnIndex(StationEntry.COLUMN_STATION_NAME)));
         return cursor.getString(cursor.getColumnIndex(StationEntry.COLUMN_STATION_NAME));
 
     }
@@ -88,6 +87,5 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("DELETE FROM " + StationEntry.TABLE_NAME);
         db.close();
-        Log.v(LOG_TAG, "" + getAllStations().size());
     }
 }
