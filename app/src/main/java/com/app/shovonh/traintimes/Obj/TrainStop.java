@@ -1,5 +1,7 @@
 package com.app.shovonh.traintimes.Obj;
 
+import org.parceler.Parcel;
+
 /**
  * Created by Shovon on 6/10/16.
  */
@@ -14,21 +16,22 @@ package com.app.shovonh.traintimes.Obj;
 //        "TRAIN_ID": "303326",
 //        "WAITING_SECONDS": "1643",
 //        "WAITING_TIME": "26 min"
-public class TrainStop {
-    String station, line, direction, destination, waiting_seconds, waiting_time;
+@Parcel
+public class TrainStop{
+    public String station, line, direction, destination, waitingSeconds, waitingTime;
 
     public TrainStop(){
 
     }
 
     public TrainStop(String station, String line, String direction,
-                    String destination, String waiting_seconds, String waiting_time){
+                     String destination, String waitingSeconds, String waitingTime){
         this.station = station;
         this.line = line;
         this.direction = direction;
         this.destination = destination;
-        this.waiting_seconds = waiting_seconds;
-        this.waiting_time = waiting_time;
+        this.waitingSeconds = waitingSeconds;
+        this.waitingTime = waitingTime;
     }
 
     public String getStation() {
@@ -63,19 +66,19 @@ public class TrainStop {
         this.destination = destination;
     }
 
-    public String getWaiting_seconds() {
-        return waiting_seconds;
+    public String getWaitingSeconds() {
+        return waitingSeconds;
     }
 
-    public void setWaiting_seconds(String waiting_seconds) {
-        this.waiting_seconds = waiting_seconds;
+    public void setWaitingSeconds(String waitingSeconds) {
+        this.waitingSeconds = waitingSeconds;
     }
 
-    public String getWaiting_time() {
-        return waiting_time;
+    public String getWaitingTime() {
+        return waitingTime;
     }
 
-    public void setWaiting_time(String waiting_time) {
-        this.waiting_time = waiting_time;
+    public void setWaitingTime(String waitingTime) {
+        this.waitingTime = waitingTime;
     }
 }

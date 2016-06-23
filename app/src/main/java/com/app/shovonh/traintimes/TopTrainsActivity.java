@@ -10,7 +10,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,26 +17,30 @@ import android.view.View;
 import com.app.shovonh.traintimes.Data.DBHelper;
 import com.app.shovonh.traintimes.Obj.TrainStop;
 
+import org.parceler.Parcels;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class TopTrainsActivity extends AppCompatActivity implements FetchTrainTimes.FetchComplete{
     public static final String LOG_TAG = TopTrainsActivity.class.getSimpleName();
+    public static final String EXTRA_ARRAYLIST = "list";
 
     ArrayList<String> savedStationNames;
+    ArrayList<TrainStop> allTrainStations;
     String currentStationFrag; //set when during fragments onResume function via listner
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_top_trains);
+        final DBHelper dbHelper = new DBHelper(this);
 
         if (savedStationNames == null){
-            DBHelper dbHelper = new DBHelper(this);
             savedStationNames = dbHelper.getAllStations();
         }
 
-        final DBHelper dbHelper = new DBHelper(this);
+        allTrainStations = Parcels.unwrap(getIntent().getParcelableExtra(EXTRA_ARRAYLIST));
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -65,7 +68,6 @@ public class TopTrainsActivity extends AppCompatActivity implements FetchTrainTi
         //TODO:Check if names is empty, redirect to allstations activity if so
         Adapter adapter = new Adapter(getSupportFragmentManager());
         for (String name : savedStationNames){
-            Log.v(LOG_TAG, name);
             adapter.addFragment(TopTrainsFragment.newInstance(name), name);
         }
         viewPager.setAdapter(adapter);
