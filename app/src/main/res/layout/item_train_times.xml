@@ -14,10 +14,11 @@
 
         <LinearLayout
             android:id="@+id/train_color_bg"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:background="@color/goldLine"
             android:orientation="vertical"
+            android:layout_weight="1"
             android:padding="8dp">
 
             <TextView
@@ -35,6 +36,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"
                 android:text="Doraville"
+                android:singleLine="true"
+                android:scrollHorizontally="true"
+                android:ellipsize="marquee"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
             <TextView
@@ -50,7 +54,7 @@
 
         <TextView
             android:id="@+id/train_time_remaining"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
@@ -59,6 +63,7 @@
 
     </LinearLayout>
     <View
+        android:id="@+id/train_colored_divider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/goldLine" />

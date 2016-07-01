@@ -10,4 +10,11 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
     public ApplicationTest() {
         super(Application.class);
     }
+
+    public void testNames() {
+        String stationName = "Inman Park/Reynoldstown";
+        assertEquals("Inman Park Station", stationName.substring(0, stationName.indexOf("/")) + " Station");
+    }
+
+
 }

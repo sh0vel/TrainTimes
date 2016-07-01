@@ -22,14 +22,19 @@
         android:layout_height="wrap_content"
         app:cardCornerRadius="6dp"
         app:cardElevation="@dimen/cardview_default_elevation">
+        <android.support.v4.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="none">
 
         <LinearLayout
             android:id="@+id/train_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
-
         </LinearLayout>
+
+        </android.support.v4.widget.NestedScrollView>
     </android.support.v7.widget.CardView>
 
 </LinearLayout>

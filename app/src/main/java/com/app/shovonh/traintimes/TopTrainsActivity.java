@@ -1,8 +1,8 @@
 package com.app.shovonh.traintimes;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -15,77 +15,87 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.app.shovonh.traintimes.Data.DBHelper;
-import com.app.shovonh.traintimes.Obj.TrainStop;
-
-import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TopTrainsActivity extends AppCompatActivity implements FetchTrainTimes.FetchComplete{
+public class TopTrainsActivity extends AppCompatActivity {
     public static final String LOG_TAG = TopTrainsActivity.class.getSimpleName();
     public static final String EXTRA_ARRAYLIST = "list";
 
+    public static boolean dontExit = false;
+
     ArrayList<String> savedStationNames;
-    ArrayList<TrainStop> allTrainStations;
-    String currentStationFrag; //set when during fragments onResume function via listner
+    ViewPager viewPager;
+    TabLayout tabs;
+    Adapter adapter;
+    DBHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_top_trains);
-        final DBHelper dbHelper = new DBHelper(this);
+        dbHelper = new DBHelper(this);
 
-        if (savedStationNames == null){
+        if (savedStationNames == null) {
             savedStationNames = dbHelper.getAllStations();
+            if (savedStationNames.isEmpty()){
+                Intent intent = new Intent(this, AllTrainsActivity.class);
+                dontExit = true;
+                startActivity(intent);
+            }
         }
 
-        allTrainStations = Parcels.unwrap(getIntent().getParcelableExtra(EXTRA_ARRAYLIST));
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Upcoming Trains");
 
-        ViewPager viewPager = (ViewPager) findViewById(R.id.pager_top);
+        viewPager = (ViewPager) findViewById(R.id.pager_top);
         setupViewPager(viewPager);
 
-        TabLayout tabs = (TabLayout) findViewById(R.id.tabs_scrolling);
-        tabs.setupWithViewPager(viewPager);
+        tabs = (TabLayout) findViewById(R.id.tabs_scrolling);
+        if (tabs != null)
+            tabs.setupWithViewPager(viewPager);
 
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dbHelper.deleteAll();
-                Snackbar.make(view, "Database Clearedd", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        if (fab != null) {
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(view.getContext(), AllTrainsActivity.class);
+                    dontExit = true;
+                    startActivity(intent);
+                }
+            });
+        }
     }
 
-    private void setupViewPager(ViewPager viewPager){
-        //TODO:Check if names is empty, redirect to allstations activity if so
-        Adapter adapter = new Adapter(getSupportFragmentManager());
-        for (String name : savedStationNames){
-            adapter.addFragment(TopTrainsFragment.newInstance(name), name);
+    private void setupViewPager(ViewPager viewPager) {
+        adapter = new Adapter(getSupportFragmentManager());
+        for (String name : savedStationNames) {
+            adapter.addFragment(TopTrainsFragment.newInstance(name, getIntent().getParcelableExtra(EXTRA_ARRAYLIST)), name);
         }
         viewPager.setAdapter(adapter);
     }
 
-    static class Adapter extends FragmentPagerAdapter{
+
+    static class Adapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
         private final List<String> mFragmentTitleList = new ArrayList<>();
 
-        public Adapter(FragmentManager manager){
+        private long baseId = 0;
+
+        public Adapter(FragmentManager manager) {
             super(manager);
         }
 
-        public void addFragment(Fragment fragment, String title){
+        public void addFragment(Fragment fragment, String title) {
             mFragmentList.add(fragment);
             mFragmentTitleList.add(title);
-        }
 
+        }
 
         @Override
         public Fragment getItem(int position) {
@@ -105,11 +115,6 @@ public class TopTrainsActivity extends AppCompatActivity implements FetchTrainTi
 
 
     @Override
-    public void onFetchCompete(ArrayList<TrainStop> trainStops) {
-
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_top_trains, menu);
         return super.onCreateOptionsMenu(menu);
@@ -118,11 +123,31 @@ public class TopTrainsActivity extends AppCompatActivity implements FetchTrainTi
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        switch (id){
-            case R.id.action_map:break;
-            case R.id.action_nav:break;
-            case R.id.action_settings:break;
+        switch (id) {
+            case R.id.action_map:
+                break;
+            case R.id.action_nav:
+                break;
+            case R.id.action_delete:
+                String d = adapter.getPageTitle(tabs.getSelectedTabPosition()).toString();
+                dbHelper.deleteEntry(d);
+                dontExit = true;
+                Intent intent = getIntent();
+                intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(intent);
+                break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override
+    protected void onStop() {
+        if (!dontExit) {
+            finish();
+            System.exit(0);
+        }
+        super.onStop();
+
     }
 }

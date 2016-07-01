@@ -3,7 +3,6 @@ package com.app.shovonh.traintimes;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 import com.app.shovonh.traintimes.Data.DBHelper;
 import com.app.shovonh.traintimes.Obj.TrainStop;
@@ -28,13 +27,16 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onFetchCompete(ArrayList<TrainStop> trainStops) {
                     topTrainsIntent.putExtra(TopTrainsActivity.EXTRA_ARRAYLIST, Parcels.wrap(trainStops));
+
                     startActivity(topTrainsIntent);
+                    finish();
 
                 }
             });
             fetchTrainTimes.execute();
         } else {
             Intent intent = new Intent(this, AllTrainsActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
             finish();
         }
