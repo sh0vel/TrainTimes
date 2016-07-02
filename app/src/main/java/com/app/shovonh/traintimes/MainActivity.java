@@ -27,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onFetchCompete(ArrayList<TrainStop> trainStops) {
                     topTrainsIntent.putExtra(TopTrainsActivity.EXTRA_ARRAYLIST, Parcels.wrap(trainStops));
-
                     startActivity(topTrainsIntent);
                     finish();
 
@@ -36,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
             fetchTrainTimes.execute();
         } else {
             Intent intent = new Intent(this, AllTrainsActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
             startActivity(intent);
             finish();
         }

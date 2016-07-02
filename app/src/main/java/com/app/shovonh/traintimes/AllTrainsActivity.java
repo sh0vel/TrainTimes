@@ -35,6 +35,8 @@ public class AllTrainsActivity extends AppCompatActivity implements AllTrainsFra
 
         dbHelper = new DBHelper(this);
 
+        Location;
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Select Stations");
@@ -57,8 +59,10 @@ public class AllTrainsActivity extends AppCompatActivity implements AllTrainsFra
                     @Override
                     public void onFetchCompete(ArrayList<TrainStop> trainStops) {
                         topTrainsIntent.putExtra(TopTrainsActivity.EXTRA_ARRAYLIST, Parcels.wrap(trainStops));
+                        topTrainsIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         //TODO: pass true if new station selected, toptrainsactivity viewpager will autoscroll to new selection.
                         startActivity(topTrainsIntent);
+                        finish();
                     }
                 });
                 fetchTrainTimes.execute();
@@ -143,4 +147,8 @@ public class AllTrainsActivity extends AppCompatActivity implements AllTrainsFra
             fab.show();
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
 }

@@ -43,6 +43,7 @@ public class TopTrainsActivity extends AppCompatActivity {
                 Intent intent = new Intent(this, AllTrainsActivity.class);
                 dontExit = true;
                 startActivity(intent);
+                finish();
             }
         }
 
@@ -135,6 +136,7 @@ public class TopTrainsActivity extends AppCompatActivity {
                 Intent intent = getIntent();
                 intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(intent);
+                finish();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -148,6 +150,6 @@ public class TopTrainsActivity extends AppCompatActivity {
             System.exit(0);
         }
         super.onStop();
-
     }
+
 }
