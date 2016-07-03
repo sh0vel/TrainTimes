@@ -82,7 +82,7 @@ public class AllTrainsActivity extends AppCompatActivity implements AllTrainsFra
             @Override
             public void onClick(View view) {
 
-               
+                LocationHelper.getUserLocation(view.getContext(), locationManager, locationListener, getParent());
 
 //               final Intent topTrainsIntent = new Intent(view.getContext(), TopTrainsActivity.class);
 //                //if (fab.getDrawable().getConstantState().equals(getResources()
