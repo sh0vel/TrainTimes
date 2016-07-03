@@ -2,7 +2,6 @@ package com.app.shovonh.traintimes;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -13,8 +12,6 @@ import android.widget.TextView;
 
 import com.app.shovonh.traintimes.Obj.TrainStop;
 
-import org.parceler.Parcels;
-
 import java.util.ArrayList;
 
 /**
@@ -24,11 +21,9 @@ public class TopTrainsFragment extends Fragment {
     //TODO: if no upcoming trains, display a message
 
     private static final String ARG_STATION_NAME = "param1";
-    private static final String ARG_ALL_UPCOMING_STATIONS = "param2";
 
     public static final String LOG_TAG = TopTrainsFragment.class.getSimpleName();
     private static String STATION_NAME;
-    private static ArrayList<TrainStop> allUpcomnigTrains;
     private static TrainStop[] upcomingTrains;
 
     ArrayList<View> trainTimesDisplay = new ArrayList<>();
@@ -38,11 +33,10 @@ public class TopTrainsFragment extends Fragment {
     public TopTrainsFragment() {
     }
 
-    public static TopTrainsFragment newInstance(String stationName, Parcelable allStations) {
+    public static TopTrainsFragment newInstance(String stationName) {
         TopTrainsFragment fragment = new TopTrainsFragment();
         Bundle args = new Bundle();
         args.putString(ARG_STATION_NAME, stationName);
-        args.putParcelable(ARG_ALL_UPCOMING_STATIONS, allStations);
         fragment.setArguments(args);
         return fragment;
     }
@@ -59,8 +53,7 @@ public class TopTrainsFragment extends Fragment {
 
         if (getArguments() != null) {
             STATION_NAME = getArguments().getString(ARG_STATION_NAME);
-            allUpcomnigTrains = Parcels.unwrap(getArguments().getParcelable(ARG_ALL_UPCOMING_STATIONS));
-            upcomingTrains = Utilities.getRelevantStations(STATION_NAME, allUpcomnigTrains);
+            upcomingTrains = Utilities.getRelevantStations(STATION_NAME);
         }
         View view = inflater.inflate(R.layout.fragment_top_trains, container, false);
         LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.train_container);
@@ -86,6 +79,9 @@ public class TopTrainsFragment extends Fragment {
             lineColor.setText(Utilities.getLine(t.getLine()));
             coloredDivider.setBackgroundColor(Utilities.getColorRes(getContext(), t.getLine()));
 
+            if (i == upcomingTrains.length - 1)
+                coloredDivider.setVisibility(View.GONE);
+
             trainTimesDisplay.add(trainTimeCard);
             linearLayout.addView(trainTimeCard);
         }
@@ -104,13 +100,7 @@ public class TopTrainsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-//        if (getArguments() != null)
-//         currentSelectedFragment(getArguments().getString(ARG_STATION_NAME));
-//
-//
-//        for (TrainStop t : upcomingTrains){
-//            Log.v(LOG_TAG, "Station: " + t.getStation() + " Line: " + t.getLine() + " Direction: " + t.getDirection() + " Wait time: " + t.getWaitingTime());
-//        }
+
     }
 
     @Override
@@ -133,8 +123,6 @@ public class TopTrainsFragment extends Fragment {
     }
 
     public void currentSelectedFragment(String name){
-        if(mListener != null)
-            mListener.currentSelectedFragment(name);
     }
 
     public interface OnFragmentInteractionListener {

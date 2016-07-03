@@ -88,4 +88,8 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("DELETE FROM " + StationEntry.TABLE_NAME);
         db.close();
     }
+
+    public int getCount(){
+        return getAllStations().size();
+    }
 }

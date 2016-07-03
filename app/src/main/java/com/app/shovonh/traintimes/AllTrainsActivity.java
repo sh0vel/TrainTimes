@@ -1,41 +1,44 @@
 package com.app.shovonh.traintimes;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.app.shovonh.traintimes.Data.DBHelper;
-import com.app.shovonh.traintimes.Obj.TrainStop;
-
-import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class AllTrainsActivity extends AppCompatActivity implements AllTrainsFragment.OnFragmentInteractionListener {
+    public static final String LOG_TAG = AllTrainsActivity.class.getSimpleName();
 
 
     FloatingActionButton fab;
     boolean selectionMade = false;
     DBHelper dbHelper;
+
     //TODO: add snackbar on first use saying "Select all frequently used stations"
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_all_trains);
 
-        dbHelper = new DBHelper(this);
 
-        Location;
+        dbHelper = new DBHelper(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -47,25 +50,55 @@ public class AllTrainsActivity extends AppCompatActivity implements AllTrainsFra
         TabLayout tabs = (TabLayout) findViewById(R.id.tabs);
         tabs.setupWithViewPager(viewPager);
 
+
+        // Acquire a reference to the system Location Manager
+        final LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
+        // Define a listener that responds to location updates
+        final LocationListener locationListener = new LocationListener() {
+            public void onLocationChanged(Location location) {
+                // Called when a new location is found by the network location provider.
+                onLocationReceived(location);
+                int permissionCheck = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION);
+               // locationManager.removeUpdates(locationListener);
+            }
+
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+            }
+
+            public void onProviderEnabled(String provider) {
+            }
+
+            public void onProviderDisabled(String provider) {
+            }
+        };
+
+        // Register the listener with the Location Manager to receive location updates
+
+
         fab = (FloatingActionButton) findViewById(R.id.fab);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               final Intent topTrainsIntent = new Intent(view.getContext(), TopTrainsActivity.class);
-                //if (fab.getDrawable().getConstantState().equals(getResources()
-                  //      .getDrawable(R.drawable.ic_done_white_24dp).getConstantState())) {
-                FetchTrainTimes fetchTrainTimes = new FetchTrainTimes(new FetchTrainTimes.FetchComplete() {
-                    @Override
-                    public void onFetchCompete(ArrayList<TrainStop> trainStops) {
-                        topTrainsIntent.putExtra(TopTrainsActivity.EXTRA_ARRAYLIST, Parcels.wrap(trainStops));
-                        topTrainsIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        //TODO: pass true if new station selected, toptrainsactivity viewpager will autoscroll to new selection.
-                        startActivity(topTrainsIntent);
-                        finish();
-                    }
-                });
-                fetchTrainTimes.execute();
+
+               
+
+//               final Intent topTrainsIntent = new Intent(view.getContext(), TopTrainsActivity.class);
+//                //if (fab.getDrawable().getConstantState().equals(getResources()
+//                  //      .getDrawable(R.drawable.ic_done_white_24dp).getConstantState())) {
+//                FetchTrainTimes fetchTrainTimes = new FetchTrainTimes(new FetchTrainTimes.FetchComplete() {
+//                    @Override
+//                    public void onFetchCompete(ArrayList<TrainStop> trainStops) {
+//                        topTrainsIntent.putExtra(TopTrainsActivity.EXTRA_ARRAYLIST, Parcels.wrap(trainStops));
+//                        topTrainsIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                        //TODO: pass true if new station selected, toptrainsactivity viewpager will autoscroll to new selection.
+//                        startActivity(topTrainsIntent);
+//                        finish();
+//                    }
+//                });
+//                fetchTrainTimes.execute();
+
             }
         });
 
@@ -112,27 +145,33 @@ public class AllTrainsActivity extends AppCompatActivity implements AllTrainsFra
 
     @Override
     public void listItemSelected(View view, String station) {
-        //TODO: When selected, add to db, switch to toptrains activity, display time of newly selected station
         dbHelper.insertData(station);
-        hideFAB();
-        selectionMade = true;
-        Snackbar sb = Snackbar.make(view, station + " added to main screen", Snackbar.LENGTH_LONG);
-        View.OnClickListener snackButtonUndo = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        Intent topTrains = new Intent(this, TopTrainsActivity.class);
+        topTrains.putExtra(TopTrainsActivity.EXTRA_SCROLL_TO_LAST, true);
+        topTrains.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        //TODO: pass true if new station selected, toptrainsactivity viewpager will autoscroll to new selection.
+        startActivity(topTrains);
+        finish();
+//        hideFAB();
+//        selectionMade = true;
+//        Snackbar sb = Snackbar.make(view, station + " added to main screen", Snackbar.LENGTH_LONG);
+//        View.OnClickListener snackButtonUndo = new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//
+//            }
+//        };
+//        sb.setAction("UNDO", snackButtonUndo);
+//        sb.show();
+//        sb.setCallback(new Snackbar.Callback() {
+//            @Override
+//            public void onDismissed(Snackbar snackbar, int event) {
+//                super.onDismissed(snackbar, event);
+//                fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_done_white_24dp));
+//                showFAB();
+//            }
+//        });
 
-            }
-        };
-        sb.setAction("UNDO", snackButtonUndo);
-        sb.show();
-        sb.setCallback(new Snackbar.Callback() {
-            @Override
-            public void onDismissed(Snackbar snackbar, int event) {
-                super.onDismissed(snackbar, event);
-                fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_done_white_24dp));
-                showFAB();
-            }
-        });
     }
 
     @Override
@@ -147,8 +186,22 @@ public class AllTrainsActivity extends AppCompatActivity implements AllTrainsFra
             fab.show();
     }
 
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();
     }
+
+    public void onLocationReceived(Location location){
+
+    }
+
+
+
+
+
+
+
+
+
 }

@@ -57,9 +57,9 @@ public class Utilities {
         }
     }
 
-    public static TrainStop[] getRelevantStations(String stationName, ArrayList<TrainStop> allStations) {
+    public static TrainStop[] getRelevantStations(String stationName) {
         ArrayList<TrainStop> relevantStations = new ArrayList<>();
-        for (TrainStop t : allStations) {
+        for (TrainStop t : FetchTrainTimes.trainStops) {
             String name = t.getStation();
             if ((stationName + " station").equalsIgnoreCase(name)) {
                 relevantStations.add(t);

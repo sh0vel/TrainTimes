@@ -21,9 +21,10 @@ import java.util.List;
 
 public class TopTrainsActivity extends AppCompatActivity {
     public static final String LOG_TAG = TopTrainsActivity.class.getSimpleName();
-    public static final String EXTRA_ARRAYLIST = "list";
+    public static final String EXTRA_SCROLL_TO_LAST = "scroll";
 
     public static boolean dontExit = false;
+    boolean scrollToLast = false;
 
     ArrayList<String> savedStationNames;
     ViewPager viewPager;
@@ -59,6 +60,12 @@ public class TopTrainsActivity extends AppCompatActivity {
         if (tabs != null)
             tabs.setupWithViewPager(viewPager);
 
+        scrollToLast = getIntent().getBooleanExtra(EXTRA_SCROLL_TO_LAST, false);
+        if (scrollToLast){
+            TabLayout.Tab tab = tabs.getTabAt(tabs.getTabCount() - 1);
+            tab.select();
+            getIntent().putExtra(EXTRA_SCROLL_TO_LAST, false);
+        }
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         if (fab != null) {
@@ -76,7 +83,7 @@ public class TopTrainsActivity extends AppCompatActivity {
     private void setupViewPager(ViewPager viewPager) {
         adapter = new Adapter(getSupportFragmentManager());
         for (String name : savedStationNames) {
-            adapter.addFragment(TopTrainsFragment.newInstance(name, getIntent().getParcelableExtra(EXTRA_ARRAYLIST)), name);
+            adapter.addFragment(TopTrainsFragment.newInstance(name), name);
         }
         viewPager.setAdapter(adapter);
     }
@@ -151,5 +158,4 @@ public class TopTrainsActivity extends AppCompatActivity {
         }
         super.onStop();
     }
-
 }

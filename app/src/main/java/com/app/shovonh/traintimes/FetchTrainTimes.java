@@ -23,10 +23,7 @@ import java.util.ArrayList;
  */
 public class FetchTrainTimes extends AsyncTask<Void, Void, ArrayList<TrainStop>> {
     public static final String LOG_TAG = FetchTrainTimes.class.getSimpleName();
-    //TODO: get train times from marta
-    //TODO: pass information and completion to main activity via listner
-    //TODO: pass info to ui after initial request
-    ArrayList<TrainStop> trainStops;
+    public static ArrayList<TrainStop> trainStops;
     FetchComplete fetchCompleteListener;
 
 
@@ -144,6 +141,7 @@ public class FetchTrainTimes extends AsyncTask<Void, Void, ArrayList<TrainStop>>
     @Override
     protected void onPostExecute(ArrayList<TrainStop> trainStops) {
         super.onPostExecute(trainStops);
+        this.trainStops = trainStops;
         fetchCompleteListener.onFetchCompete(trainStops);
     }
 }
