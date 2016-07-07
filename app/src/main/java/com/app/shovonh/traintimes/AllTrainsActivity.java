@@ -1,21 +1,30 @@
 package com.app.shovonh.traintimes;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 
 import com.app.shovonh.traintimes.Data.DBHelper;
@@ -26,17 +35,20 @@ import java.util.List;
 public class AllTrainsActivity extends AppCompatActivity implements AllTrainsFragment.OnFragmentInteractionListener {
     public static final String LOG_TAG = AllTrainsActivity.class.getSimpleName();
 
-
+    public static final int PERMISSION_GPS = 5;
     FloatingActionButton fab;
     boolean selectionMade = false;
     DBHelper dbHelper;
+    LocationManager locationManager;
+    LocationListener locationListener;
+    //Activity activity;
 
     //TODO: add snackbar on first use saying "Select all frequently used stations"
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_all_trains);
-
+       // activity = this;
 
         dbHelper = new DBHelper(this);
 
@@ -52,15 +64,14 @@ public class AllTrainsActivity extends AppCompatActivity implements AllTrainsFra
 
 
         // Acquire a reference to the system Location Manager
-        final LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
         // Define a listener that responds to location updates
-        final LocationListener locationListener = new LocationListener() {
+        locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 // Called when a new location is found by the network location provider.
-                onLocationReceived(location);
-                int permissionCheck = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION);
-               // locationManager.removeUpdates(locationListener);
+                onLocationReceived(location, findViewById(R.id.activity_all_trains));
+
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -70,6 +81,7 @@ public class AllTrainsActivity extends AppCompatActivity implements AllTrainsFra
             }
 
             public void onProviderDisabled(String provider) {
+                Log.v(LOG_TAG, "Provider Disabled");
             }
         };
 
@@ -79,11 +91,11 @@ public class AllTrainsActivity extends AppCompatActivity implements AllTrainsFra
         fab = (FloatingActionButton) findViewById(R.id.fab);
 
         fab.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View view) {
-
-                LocationHelper.getUserLocation(view.getContext(), locationManager, locationListener, getParent());
-
+                requestLocationPermission(locationManager, locationListener, view.getContext(), (Activity) view.getContext());
+            }
 //               final Intent topTrainsIntent = new Intent(view.getContext(), TopTrainsActivity.class);
 //                //if (fab.getDrawable().getConstantState().equals(getResources()
 //                  //      .getDrawable(R.drawable.ic_done_white_24dp).getConstantState())) {
@@ -98,11 +110,7 @@ public class AllTrainsActivity extends AppCompatActivity implements AllTrainsFra
 //                    }
 //                });
 //                fetchTrainTimes.execute();
-
-            }
         });
-
-
     }
 
     private void setupViewPager(ViewPager viewPager) {
@@ -192,16 +200,87 @@ public class AllTrainsActivity extends AppCompatActivity implements AllTrainsFra
         super.onBackPressed();
     }
 
-    public void onLocationReceived(Location location){
+    public void onLocationReceived(Location location,View view) {
+        Snackbar sb = Snackbar.make(view, "LAT = " + location.getLatitude() + " LONG = " + location.getLongitude(), Snackbar.LENGTH_LONG);
+        sb.show();
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED)
+            locationManager.removeUpdates(locationListener);
 
+
+    }
+
+    public static void requestLocationPermission(LocationManager locationManager, LocationListener locationListener, Context context, Activity activity) {
+
+        if (isGPSActive(locationManager)) {
+
+            int permissionCheck = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION);
+
+            if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+                requestLocation(locationManager, locationListener, context);
+            } else {
+                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_GPS);
+            }
+        } else {
+            showAlert(context);
+        }
+    }
+
+    public static void requestLocation(LocationManager locationManager, LocationListener locationListener, Context context) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED)
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
     }
 
 
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case PERMISSION_GPS:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    //permission granted;
+                    //add correct station to top stations
+                    requestLocation(locationManager, locationListener, getApplicationContext());
+
+                } else {
+                    //permission denied;
+                }
+                return;
+        }
+    }
+
+    private static void showAlert(Context c) {
+        final Context context = c;
+        final AlertDialog.Builder dialog = new AlertDialog.Builder(context);
+        dialog.setTitle("Enable Location")
+                .setMessage("Your Locations Settings is set to 'Off'.\nPlease Enable Location to " +
+                        "continue")
+                .setPositiveButton("Location Settings", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                        Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        context.startActivity(myIntent);
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                    }
+                });
+        dialog.show();
+    }
+
+    public static boolean isGPSActive(LocationManager locationManager) {
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+    }
 
 
-
-
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //check if user is coming back from settings screen
+    }
 
 }
