@@ -1,0 +1,192 @@
+[
+  {
+    "name": "Airport",
+    "latitude": 33.6396,
+    "longitude": -84.4463
+  },
+  {
+    "name": "Arts",
+    "latitude": 33.7893,
+    "longitude": -84.3870
+  },
+  {
+    "name": "Ashby",
+    "latitude": 33.7565,
+    "longitude": -84.4173
+  },
+  {
+    "name": "Avondale",
+    "latitude": 33.7751,
+    "longitude": -84.2821
+  },
+  {
+    "name": "Bankhead",
+    "latitude": 33.7724,
+    "longitude": -84.4289
+  },
+  {
+    "name": "Brookhaven/Oglethorpe",
+    "latitude": 33.860705,
+    "longitude": -84.340003
+  },
+  {
+    "name": "Buckhead",
+    "latitude": 33.8477,
+    "longitude": -84.3677
+  },
+  {
+    "name": "Chamblee",
+    "latitude": 33.8879,
+    "longitude": -84.3056
+  },
+  {
+    "name": "Civic Center",
+    "latitude": 33.7662,
+    "longitude": -84.3875
+  },
+  {
+    "name": "College Park",
+    "latitude": 33.6513,
+    "longitude": -84.4488
+  },
+  {
+    "name": "Decatur",
+    "latitude": 33.7747,
+    "longitude": -84.2953
+  },
+  {
+    "name": "Doraville",
+    "latitude": 33.9034,
+    "longitude": -84.2792
+  },
+  {
+    "name": "Dunwoody",
+    "latitude": 33.9212,
+    "longitude": -84.3444
+  },
+  {
+    "name": "East Lake",
+    "latitude": 33.7652,
+    "longitude": -84.3130
+  },
+  {
+    "name": "East Point",
+    "latitude": 33.6774,
+    "longitude": -84.4405
+  },
+  {
+    "name": "Edgewood Candler Park",
+    "latitude": 33.7619,
+    "longitude": -84.3405
+  },
+  {
+    "name": "Five Points",
+    "latitude": 33.753826,
+    "longitude": -84.391571
+  },
+  {
+    "name": "Garnett",
+    "latitude": 33.7487,
+    "longitude": -84.3957
+  },
+  {
+    "name": "Georgia State",
+    "latitude": 33.7498,
+    "longitude": -84.3854
+  },
+  {
+    "name": "Hamilton E Holmes",
+    "latitude": 33.7545,
+    "longitude": -84.4700
+  },
+  {
+    "name": "Indian Creek",
+    "latitude": 33.7697,
+    "longitude": -84.2298
+  },
+  {
+    "name": "Inman Park/Reynoldstown",
+    "latitude": 33.757497,
+    "longitude": -84.352797
+  },
+  {
+    "name": "Kensington",
+    "latitude": 33.7726,
+    "longitude": -84.2516
+  },
+  {
+    "name": "King Memorial",
+    "latitude": 33.7501,
+    "longitude": -84.3758
+  },
+  {
+    "name": "Lakewood/Ft. McPherson",
+    "latitude": 33.7003,
+    "longitude": -84.4289
+  },
+  {
+    "name": "Lenox",
+    "latitude": 33.8451,
+    "longitude": -84.3588
+  },
+  {
+    "name": "Lindbergh Center",
+    "latitude": 33.8226,
+    "longitude": -84.3695
+  },
+  {
+    "name": "Medical Center",
+    "latitude": 33.9106,
+    "longitude": -84.3514
+  },
+  {
+    "name": "Midtown",
+    "latitude": 33.7814,
+    "longitude": -84.3864
+  },
+  {
+    "name": "North Avenue",
+    "latitude": 33.7717,
+    "longitude": -84.3871
+  },
+  {
+    "name": "North Springs",
+    "latitude": 33.9449,
+    "longitude": -84.3572
+  },
+  {
+    "name": "Oakland City",
+    "latitude": 33.7173,
+    "longitude": -84.4250
+  },
+  {
+    "name": "Omni Dome",
+    "latitude": 33.756293,
+    "longitude": -84.397759
+  },
+  {
+    "name": "Peachtree Center",
+    "latitude": 33.7580,
+    "longitude": -84.3878
+  },
+  {
+    "name": "Sandy Springs",
+    "latitude": 33.9321,
+    "longitude": -84.3514
+  },
+  {
+    "name": "Vine City",
+    "latitude": 33.7566,
+    "longitude": -84.4040
+  },
+  {
+    "name": "West End",
+    "latitude": 33.7360,
+    "longitude": -84.4136
+  },
+  {
+    "name": "West Lake",
+    "latitude": 33.75314,
+    "longitude": -84.44658
+  }
+]

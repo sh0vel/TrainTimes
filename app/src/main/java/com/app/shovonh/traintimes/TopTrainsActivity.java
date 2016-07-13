@@ -1,6 +1,8 @@
 package com.app.shovonh.traintimes;
 
 import android.content.Intent;
+import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
@@ -10,6 +12,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,6 +21,7 @@ import com.app.shovonh.traintimes.Data.DBHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class TopTrainsActivity extends AppCompatActivity {
     public static final String LOG_TAG = TopTrainsActivity.class.getSimpleName();
@@ -36,11 +40,12 @@ public class TopTrainsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_top_trains);
+        Log.v(LOG_TAG, "onCreate");
         dbHelper = new DBHelper(this);
 
         if (savedStationNames == null) {
             savedStationNames = dbHelper.getAllStations();
-            if (savedStationNames.isEmpty()){
+            if (savedStationNames.isEmpty()) {
                 Intent intent = new Intent(this, AllTrainsActivity.class);
                 dontExit = true;
                 startActivity(intent);
@@ -61,7 +66,7 @@ public class TopTrainsActivity extends AppCompatActivity {
             tabs.setupWithViewPager(viewPager);
 
         scrollToLast = getIntent().getBooleanExtra(EXTRA_SCROLL_TO_LAST, false);
-        if (scrollToLast){
+        if (scrollToLast) {
             TabLayout.Tab tab = tabs.getTabAt(tabs.getTabCount() - 1);
             tab.select();
             getIntent().putExtra(EXTRA_SCROLL_TO_LAST, false);
@@ -119,6 +124,12 @@ public class TopTrainsActivity extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             return mFragmentTitleList.get(position);
         }
+
+        @Override
+        public int getItemPosition(Object object) {
+            // POSITION_NONE makes it possible to reload the PagerAdapter
+            return POSITION_NONE;
+        }
     }
 
 
@@ -135,6 +146,12 @@ public class TopTrainsActivity extends AppCompatActivity {
             case R.id.action_map:
                 break;
             case R.id.action_nav:
+                dontExit = true;
+                Location location = Utilities.getCoordinates(getApplicationContext(),
+                        adapter.getPageTitle(tabs.getSelectedTabPosition()).toString());
+                String uri = String.format(Locale.ENGLISH, "google.navigation:q=%f,%f", location.getLatitude(), location.getLongitude());
+                Intent mapIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                startActivity(mapIntent);
                 break;
             case R.id.action_delete:
                 String d = adapter.getPageTitle(tabs.getSelectedTabPosition()).toString();
@@ -145,19 +162,56 @@ public class TopTrainsActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish();
                 break;
+            case R.id.action_refresh:
+                refreshTimes();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
 
-
     @Override
-    protected void onStop() {
-        if (!dontExit) {
-            finish();
-            System.exit(0);
-        }
-        super.onStop();
+    protected void onResume() {
+        super.onResume();
+        Log.v(LOG_TAG, "onResume");
+        //show sync icon
+        refreshTimes();
     }
 
+
+    private void refreshTimes(){
+        FetchTrainTimes fetchTrainTimes = new FetchTrainTimes(new FetchTrainTimes.FetchComplete() {
+            @Override
+            public void onFetchCompete() {
+                Log.v(LOG_TAG, "fetchComplete");
+                List<Fragment> fragments = adapter.mFragmentList;
+                List<String> names = adapter.mFragmentTitleList;
+                Log.v(LOG_TAG, "List size = " + fragments.size() + " Tab count = " + tabs.getTabCount());
+                int currentTab = tabs.getSelectedTabPosition();
+                Log.v(LOG_TAG, "Current tab = " + tabs.getSelectedTabPosition());
+                //if first or last
+                //update 2 of them
+                if (fragments.size() > 2) {
+                    if (currentTab == 0) {
+                        fragments.set(0, TopTrainsFragment.newInstance(names.get(0)));
+                        fragments.set(1, TopTrainsFragment.newInstance(names.get(1)));
+                    } else if (currentTab == fragments.size() - 1) {
+                        fragments.set(fragments.size() - 1, TopTrainsFragment.newInstance(names.get(fragments.size() - 1)));
+                        fragments.set(fragments.size() - 2, TopTrainsFragment.newInstance(names.get(fragments.size() - 1)));
+                    } else {
+                        //else update 3
+                        fragments.set(tabs.getSelectedTabPosition(), TopTrainsFragment.newInstance(names.get(tabs.getSelectedTabPosition())));
+                        fragments.set(tabs.getSelectedTabPosition() - 1, TopTrainsFragment.newInstance(names.get(tabs.getSelectedTabPosition() - 1)));
+                        fragments.set(tabs.getSelectedTabPosition() + 1, TopTrainsFragment.newInstance(names.get(tabs.getSelectedTabPosition() + 1)));
+                    }
+                }else{
+                    fragments.set(0, TopTrainsFragment.newInstance(names.get(0)));
+                    fragments.set(1, TopTrainsFragment.newInstance(names.get(1)));
+                }
+                viewPager.getAdapter().notifyDataSetChanged();
+            }
+
+        });
+        fetchTrainTimes.execute();
+    }
 
 }

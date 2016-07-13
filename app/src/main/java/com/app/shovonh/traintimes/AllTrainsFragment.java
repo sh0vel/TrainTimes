@@ -78,7 +78,7 @@ public class AllTrainsFragment extends Fragment {
             itemView.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View view) {
-                    onButtonPressed(view, name.getText().toString());
+                    onButtonPressed(name.getText().toString());
                 }
             });
         }
@@ -125,9 +125,9 @@ public class AllTrainsFragment extends Fragment {
 
 
 
-    public static void onButtonPressed(View view, String station) {
+    public static void onButtonPressed(String station) {
         if (mListener != null) {
-            mListener.listItemSelected(view, station);
+            mListener.listItemSelected(station);
         }
     }
 
@@ -162,7 +162,7 @@ public class AllTrainsFragment extends Fragment {
     }
 
     public interface OnFragmentInteractionListener {
-        void listItemSelected(View view, String station);
+        void listItemSelected(String station);
         void hideFAB();
         void showFAB();
     }

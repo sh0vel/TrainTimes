@@ -28,7 +28,7 @@ public class FetchTrainTimes extends AsyncTask<Void, Void, ArrayList<TrainStop>>
 
 
     public interface FetchComplete {
-        void onFetchCompete(ArrayList<TrainStop> trainStops);
+        void onFetchCompete();
     }
 
     public FetchTrainTimes(FetchComplete fetchCompleteListener){
@@ -142,6 +142,6 @@ public class FetchTrainTimes extends AsyncTask<Void, Void, ArrayList<TrainStop>>
     protected void onPostExecute(ArrayList<TrainStop> trainStops) {
         super.onPostExecute(trainStops);
         this.trainStops = trainStops;
-        fetchCompleteListener.onFetchCompete(trainStops);
+        fetchCompleteListener.onFetchCompete();
     }
 }

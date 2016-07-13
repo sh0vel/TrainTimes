@@ -1,6 +1,5 @@
 package com.app.shovonh.traintimes;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -27,8 +26,6 @@ public class TopTrainsFragment extends Fragment {
     private static TrainStop[] upcomingTrains;
 
     ArrayList<View> trainTimesDisplay = new ArrayList<>();
-
-    public static OnFragmentInteractionListener mListener;
 
     public TopTrainsFragment() {
     }
@@ -94,38 +91,5 @@ public class TopTrainsFragment extends Fragment {
         outState.putString(ARG_STATION_NAME, STATION_NAME);
 
         super.onSaveInstanceState(outState);
-    }
-
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        }
-    }
-
-    public void currentSelectedFragment(String name){
-    }
-
-    public interface OnFragmentInteractionListener {
-        void currentSelectedFragment(String name);
     }
 }

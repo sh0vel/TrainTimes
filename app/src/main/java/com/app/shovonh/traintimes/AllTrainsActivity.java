@@ -28,6 +28,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.app.shovonh.traintimes.Data.DBHelper;
+import com.pnikosis.materialishprogress.ProgressWheel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,21 +37,25 @@ public class AllTrainsActivity extends AppCompatActivity implements AllTrainsFra
     public static final String LOG_TAG = AllTrainsActivity.class.getSimpleName();
 
     public static final int PERMISSION_GPS = 5;
-    FloatingActionButton fab;
+
     boolean selectionMade = false;
     DBHelper dbHelper;
     LocationManager locationManager;
     LocationListener locationListener;
-    //Activity activity;
 
-    //TODO: add snackbar on first use saying "Select all frequently used stations"
+    static FloatingActionButton fab;
+    static ProgressWheel wheel;
+    static boolean wentToSettingsActivity = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_all_trains);
-       // activity = this;
 
         dbHelper = new DBHelper(this);
+        wheel = (ProgressWheel) findViewById(R.id.progress_wheel);
+        wheel.setCircleRadius(75);
+        wheel.setVisibility(View.INVISIBLE);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -70,7 +75,7 @@ public class AllTrainsActivity extends AppCompatActivity implements AllTrainsFra
         locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 // Called when a new location is found by the network location provider.
-                onLocationReceived(location, findViewById(R.id.activity_all_trains));
+                onLocationReceived(location, findViewById(R.id.activity_all_trains), getApplicationContext());
 
             }
 
@@ -91,26 +96,12 @@ public class AllTrainsActivity extends AppCompatActivity implements AllTrainsFra
         fab = (FloatingActionButton) findViewById(R.id.fab);
 
         fab.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View view) {
                 requestLocationPermission(locationManager, locationListener, view.getContext(), (Activity) view.getContext());
             }
-//               final Intent topTrainsIntent = new Intent(view.getContext(), TopTrainsActivity.class);
-//                //if (fab.getDrawable().getConstantState().equals(getResources()
-//                  //      .getDrawable(R.drawable.ic_done_white_24dp).getConstantState())) {
-//                FetchTrainTimes fetchTrainTimes = new FetchTrainTimes(new FetchTrainTimes.FetchComplete() {
-//                    @Override
-//                    public void onFetchCompete(ArrayList<TrainStop> trainStops) {
-//                        topTrainsIntent.putExtra(TopTrainsActivity.EXTRA_ARRAYLIST, Parcels.wrap(trainStops));
-//                        topTrainsIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                        //TODO: pass true if new station selected, toptrainsactivity viewpager will autoscroll to new selection.
-//                        startActivity(topTrainsIntent);
-//                        finish();
-//                    }
-//                });
-//                fetchTrainTimes.execute();
         });
+
     }
 
     private void setupViewPager(ViewPager viewPager) {
@@ -152,12 +143,11 @@ public class AllTrainsActivity extends AppCompatActivity implements AllTrainsFra
 
 
     @Override
-    public void listItemSelected(View view, String station) {
+    public void listItemSelected(String station) {
         dbHelper.insertData(station);
         Intent topTrains = new Intent(this, TopTrainsActivity.class);
         topTrains.putExtra(TopTrainsActivity.EXTRA_SCROLL_TO_LAST, true);
         topTrains.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        //TODO: pass true if new station selected, toptrainsactivity viewpager will autoscroll to new selection.
         startActivity(topTrains);
         finish();
 //        hideFAB();
@@ -194,19 +184,29 @@ public class AllTrainsActivity extends AppCompatActivity implements AllTrainsFra
             fab.show();
     }
 
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-    }
-
-    public void onLocationReceived(Location location,View view) {
-        Snackbar sb = Snackbar.make(view, "LAT = " + location.getLatitude() + " LONG = " + location.getLongitude(), Snackbar.LENGTH_LONG);
-        sb.show();
+    public void onLocationReceived(Location location, View view, Context context) {
         if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED)
             locationManager.removeUpdates(locationListener);
 
+        final String name =
+                Utilities.getNearestStation(context, location.getLatitude(), location.getLongitude());
+
+        Snackbar sb = Snackbar.make(view, "The nearest station is " + name, Snackbar.LENGTH_SHORT)
+                .setCallback(new Snackbar.Callback() {
+                    @Override
+                    public void onShown(Snackbar snackbar) {
+                        super.onShown(snackbar);
+                        wheel.setVisibility(View.INVISIBLE);
+                    }
+
+                    @Override
+                    public void onDismissed(Snackbar snackbar, int event) {
+                        super.onDismissed(snackbar, event);
+                        listItemSelected(name);
+                    }
+                });
+        sb.show();
 
     }
 
@@ -228,10 +228,12 @@ public class AllTrainsActivity extends AppCompatActivity implements AllTrainsFra
 
     public static void requestLocation(LocationManager locationManager, LocationListener locationListener, Context context) {
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED)
+                == PackageManager.PERMISSION_GRANTED) {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+            fab.hide();
+            wheel.setVisibility(View.VISIBLE);
+        }
     }
-
 
 
     @Override
@@ -260,6 +262,7 @@ public class AllTrainsActivity extends AppCompatActivity implements AllTrainsFra
                 .setPositiveButton("Location Settings", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                        wentToSettingsActivity = true;
                         Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                         context.startActivity(myIntent);
                     }
@@ -281,6 +284,8 @@ public class AllTrainsActivity extends AppCompatActivity implements AllTrainsFra
     protected void onResume() {
         super.onResume();
         //check if user is coming back from settings screen
+        if (wentToSettingsActivity)
+            requestLocationPermission(locationManager, locationListener, getApplicationContext(), getParent());
     }
 
 }
