@@ -26,8 +26,6 @@ import java.util.Locale;
 public class TopTrainsActivity extends AppCompatActivity {
     public static final String LOG_TAG = TopTrainsActivity.class.getSimpleName();
     public static final String EXTRA_SCROLL_TO_LAST = "scroll";
-
-    public static boolean dontExit = false;
     boolean scrollToLast = false;
 
     ArrayList<String> savedStationNames;
@@ -47,7 +45,6 @@ public class TopTrainsActivity extends AppCompatActivity {
             savedStationNames = dbHelper.getAllStations();
             if (savedStationNames.isEmpty()) {
                 Intent intent = new Intent(this, AllTrainsActivity.class);
-                dontExit = true;
                 startActivity(intent);
                 finish();
             }
@@ -78,7 +75,6 @@ public class TopTrainsActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(view.getContext(), AllTrainsActivity.class);
-                    dontExit = true;
                     startActivity(intent);
                 }
             });
@@ -144,9 +140,10 @@ public class TopTrainsActivity extends AppCompatActivity {
         int id = item.getItemId();
         switch (id) {
             case R.id.action_map:
+                Intent mapImageIntent = new Intent(this, MartaMapActivity.class);
+                startActivity(mapImageIntent);
                 break;
             case R.id.action_nav:
-                dontExit = true;
                 Location location = Utilities.getCoordinates(getApplicationContext(),
                         adapter.getPageTitle(tabs.getSelectedTabPosition()).toString());
                 String uri = String.format(Locale.ENGLISH, "google.navigation:q=%f,%f", location.getLatitude(), location.getLongitude());
@@ -156,7 +153,6 @@ public class TopTrainsActivity extends AppCompatActivity {
             case R.id.action_delete:
                 String d = adapter.getPageTitle(tabs.getSelectedTabPosition()).toString();
                 dbHelper.deleteEntry(d);
-                dontExit = true;
                 Intent intent = getIntent();
                 intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(intent);

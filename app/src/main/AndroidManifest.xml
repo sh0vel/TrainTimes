@@ -21,13 +21,12 @@
         </activity>
         <activity
             android:name=".TopTrainsActivity"
-            android:label="@string/title_activity_top_trains">
-        </activity>
+            android:label="@string/title_activity_top_trains"></activity>
         <activity
             android:name=".AllTrainsActivity"
             android:label="@string/title_activity_all_trains"
-            android:theme="@style/AppTheme"></activity>
-
+            android:theme="@style/AppTheme" />
+        <activity android:name=".MartaMapActivity"></activity>
     </application>
 
 </manifest>
