@@ -135,12 +135,14 @@ public class FetchTrainTimes extends AsyncTask<Void, Void, ArrayList<TrainStop>>
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
+        Log.v(LOG_TAG, "Starting Fetch");
 
     }
 
     @Override
     protected void onPostExecute(ArrayList<TrainStop> trainStops) {
         super.onPostExecute(trainStops);
+        Log.v(LOG_TAG, "Completed Fetch");
         this.trainStops = trainStops;
         fetchCompleteListener.onFetchCompete();
     }

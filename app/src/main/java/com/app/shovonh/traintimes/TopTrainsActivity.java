@@ -27,12 +27,14 @@ public class TopTrainsActivity extends AppCompatActivity {
     public static final String LOG_TAG = TopTrainsActivity.class.getSimpleName();
     public static final String EXTRA_SCROLL_TO_LAST = "scroll";
     boolean scrollToLast = false;
+    boolean safeToRefreshOnResume = true;
 
     ArrayList<String> savedStationNames;
     ViewPager viewPager;
     TabLayout tabs;
     Adapter adapter;
     DBHelper dbHelper;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +84,7 @@ public class TopTrainsActivity extends AppCompatActivity {
     }
 
     private void setupViewPager(ViewPager viewPager) {
+        safeToRefreshOnResume = false;
         adapter = new Adapter(getSupportFragmentManager());
         for (String name : savedStationNames) {
             adapter.addFragment(TopTrainsFragment.newInstance(name), name);
@@ -140,6 +143,7 @@ public class TopTrainsActivity extends AppCompatActivity {
         int id = item.getItemId();
         switch (id) {
             case R.id.action_map:
+                safeToRefreshOnResume = true;
                 Intent mapImageIntent = new Intent(this, MartaMapActivity.class);
                 startActivity(mapImageIntent);
                 break;
@@ -170,20 +174,19 @@ public class TopTrainsActivity extends AppCompatActivity {
         super.onResume();
         Log.v(LOG_TAG, "onResume");
         //show sync icon
-        refreshTimes();
+        if (safeToRefreshOnResume)
+            refreshTimes();
+        safeToRefreshOnResume = true;
     }
 
 
-    private void refreshTimes(){
+    private void refreshTimes() {
         FetchTrainTimes fetchTrainTimes = new FetchTrainTimes(new FetchTrainTimes.FetchComplete() {
             @Override
             public void onFetchCompete() {
-                Log.v(LOG_TAG, "fetchComplete");
                 List<Fragment> fragments = adapter.mFragmentList;
                 List<String> names = adapter.mFragmentTitleList;
-                Log.v(LOG_TAG, "List size = " + fragments.size() + " Tab count = " + tabs.getTabCount());
                 int currentTab = tabs.getSelectedTabPosition();
-                Log.v(LOG_TAG, "Current tab = " + tabs.getSelectedTabPosition());
                 //if first or last
                 //update 2 of them
                 if (fragments.size() > 2) {
@@ -199,7 +202,7 @@ public class TopTrainsActivity extends AppCompatActivity {
                         fragments.set(tabs.getSelectedTabPosition() - 1, TopTrainsFragment.newInstance(names.get(tabs.getSelectedTabPosition() - 1)));
                         fragments.set(tabs.getSelectedTabPosition() + 1, TopTrainsFragment.newInstance(names.get(tabs.getSelectedTabPosition() + 1)));
                     }
-                }else{
+                } else {
                     fragments.set(0, TopTrainsFragment.newInstance(names.get(0)));
                     fragments.set(1, TopTrainsFragment.newInstance(names.get(1)));
                 }
@@ -210,4 +213,15 @@ public class TopTrainsActivity extends AppCompatActivity {
         fetchTrainTimes.execute();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.v(LOG_TAG, "onPause");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.v(LOG_TAG, "onStop");
+    }
 }

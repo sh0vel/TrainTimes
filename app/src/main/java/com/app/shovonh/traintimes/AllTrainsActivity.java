@@ -144,32 +144,14 @@ public class AllTrainsActivity extends AppCompatActivity implements AllTrainsFra
 
     @Override
     public void listItemSelected(String station) {
+        Log.v(LOG_TAG, "Inserting new station");
         dbHelper.insertData(station);
+        getIntent().setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         Intent topTrains = new Intent(this, TopTrainsActivity.class);
         topTrains.putExtra(TopTrainsActivity.EXTRA_SCROLL_TO_LAST, true);
         topTrains.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(topTrains);
-        finish();
-//        hideFAB();
-//        selectionMade = true;
-//        Snackbar sb = Snackbar.make(view, station + " added to main screen", Snackbar.LENGTH_LONG);
-//        View.OnClickListener snackButtonUndo = new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//
-//            }
-//        };
-//        sb.setAction("UNDO", snackButtonUndo);
-//        sb.show();
-//        sb.setCallback(new Snackbar.Callback() {
-//            @Override
-//            public void onDismissed(Snackbar snackbar, int event) {
-//                super.onDismissed(snackbar, event);
-//                fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_done_white_24dp));
-//                showFAB();
-//            }
-//        });
-
+        //finish();
     }
 
     @Override
