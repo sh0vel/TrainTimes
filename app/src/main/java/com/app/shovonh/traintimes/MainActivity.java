@@ -15,9 +15,7 @@ public class MainActivity extends AppCompatActivity {
         final DBHelper dbHelper = new DBHelper(this);
 
         //if internet connected
-        FetchTrainTimes fetchTrainTimes = new FetchTrainTimes(new FetchTrainTimes.FetchComplete() {
-            @Override
-            public void onFetchCompete() {
+
                 if (dbHelper.getCount() > 0) {
                     Intent topTrains = new Intent(getApplicationContext(), TopTrainsActivity.class);
                     startActivity(topTrains);
@@ -29,7 +27,4 @@ public class MainActivity extends AppCompatActivity {
                     finish();
                 }
             }
-        });
-        fetchTrainTimes.execute();
-    }
 }

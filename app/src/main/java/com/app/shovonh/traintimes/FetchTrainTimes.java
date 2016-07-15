@@ -24,15 +24,17 @@ import java.util.ArrayList;
 public class FetchTrainTimes extends AsyncTask<Void, Void, ArrayList<TrainStop>> {
     public static final String LOG_TAG = FetchTrainTimes.class.getSimpleName();
     public static ArrayList<TrainStop> trainStops;
-    FetchComplete fetchCompleteListener;
+    fetchListener fetchListener;
 
 
-    public interface FetchComplete {
+    public interface fetchListener {
+        void onFetchStarted();
+
         void onFetchCompete();
     }
 
-    public FetchTrainTimes(FetchComplete fetchCompleteListener){
-        this.fetchCompleteListener = fetchCompleteListener;
+    public FetchTrainTimes(fetchListener fetchListener) {
+        this.fetchListener = fetchListener;
     }
 
     //    String station, line, direction, destination, waiting_seconds, waiting_time;
@@ -48,7 +50,7 @@ public class FetchTrainTimes extends AsyncTask<Void, Void, ArrayList<TrainStop>>
 
         JSONArray jsonArray = new JSONArray(jsonStr);
         ArrayList<TrainStop> trainStops = new ArrayList<>();
-        for (int i = 0; i < jsonArray.length(); i++){
+        for (int i = 0; i < jsonArray.length(); i++) {
             String station, line, direction, destination, waiting_seconds, waiting_time;
 
             JSONObject trainStop = jsonArray.getJSONObject(i);
@@ -136,6 +138,7 @@ public class FetchTrainTimes extends AsyncTask<Void, Void, ArrayList<TrainStop>>
     protected void onPreExecute() {
         super.onPreExecute();
         Log.v(LOG_TAG, "Starting Fetch");
+        fetchListener.onFetchStarted();
 
     }
 
@@ -143,7 +146,8 @@ public class FetchTrainTimes extends AsyncTask<Void, Void, ArrayList<TrainStop>>
     protected void onPostExecute(ArrayList<TrainStop> trainStops) {
         super.onPostExecute(trainStops);
         Log.v(LOG_TAG, "Completed Fetch");
+        this.trainStops = new ArrayList<>();
         this.trainStops = trainStops;
-        fetchCompleteListener.onFetchCompete();
+        fetchListener.onFetchCompete();
     }
 }

@@ -146,7 +146,6 @@ public class AllTrainsActivity extends AppCompatActivity implements AllTrainsFra
     public void listItemSelected(String station) {
         Log.v(LOG_TAG, "Inserting new station");
         dbHelper.insertData(station);
-        getIntent().setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         Intent topTrains = new Intent(this, TopTrainsActivity.class);
         topTrains.putExtra(TopTrainsActivity.EXTRA_SCROLL_TO_LAST, true);
         topTrains.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
