@@ -2,6 +2,8 @@ package com.app.shovonh.traintimes;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -91,6 +93,8 @@ public class AllTrainsFragment extends Fragment {
         private static final int LENGTH_PAGE2 = 16;
         private final String[] mNorthSouthStations;
         private final String[] mEastWestStations;
+        private final Drawable[] mNorthSouthImgs;
+        private final Drawable[] mEastWestImgs;
         private int page;
 
 
@@ -99,6 +103,18 @@ public class AllTrainsFragment extends Fragment {
             mNorthSouthStations = resources.getStringArray(R.array.north_south_stations);
             mEastWestStations = resources.getStringArray(R.array.east_west_stations);
             this.page = page;
+            TypedArray a = resources.obtainTypedArray(R.array.north_south_img);
+            mNorthSouthImgs = new Drawable[a.length()];
+            for (int i = 0; i < mNorthSouthImgs.length; i++) {
+                mNorthSouthImgs[i] = a.getDrawable(i);
+            }
+            a.recycle();
+            TypedArray b = resources.obtainTypedArray(R.array.east_west_img);
+            mEastWestImgs = new Drawable[b.length()];
+            for (int i = 0; i < mEastWestImgs.length; i++) {
+                mEastWestImgs[i] = b.getDrawable(i);
+            }
+            b.recycle();
         }
 
         @Override
@@ -108,10 +124,14 @@ public class AllTrainsFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            if (page == PAGE_NORTHSOUTH)
+            if (page == PAGE_NORTHSOUTH) {
                 holder.name.setText(mNorthSouthStations[position % mNorthSouthStations.length]);
-            if (page == PAGE_EASTWEST)
+                holder.icon.setImageDrawable(mNorthSouthImgs[position % mNorthSouthImgs.length]);
+            }
+            if (page == PAGE_EASTWEST) {
                 holder.name.setText(mEastWestStations[position % mEastWestStations.length]);
+                holder.icon.setImageDrawable(mEastWestImgs[position % mEastWestImgs.length]);
+            }
         }
 
         @Override

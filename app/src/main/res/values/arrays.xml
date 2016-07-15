@@ -43,4 +43,49 @@
         <item>Vine City</item>
         <item>West Lake</item>
     </string-array>
+
+    <array name="north_south_img">
+        <item>@drawable/airport</item>
+        <item>@drawable/arts_center</item>
+        <item>@drawable/brookhaven</item>
+        <item>@drawable/buckhead</item>
+        <item>@drawable/chamblee</item>
+        <item>@drawable/civic_center</item>
+        <item>@drawable/college_park</item>
+        <item>@drawable/dorravile</item>
+        <item>@drawable/dunwoody</item>
+        <item>@drawable/east_point</item>
+        <item>@drawable/five_points</item>
+        <item>@drawable/garnett</item>
+        <item>@drawable/lakewood</item>
+        <item>@drawable/lenox</item>
+        <item>@drawable/lindbergh_center</item>
+        <item>@drawable/medical_center</item>
+        <item>@drawable/midtown</item>
+        <item>@drawable/north_avenue</item>
+        <item>@drawable/north_springs</item>
+        <item>@drawable/oakland_city</item>
+        <item>@drawable/peachtree_center</item>
+        <item>@drawable/sandy_springs</item>
+        <item>@drawable/west_end</item>
+
+    </array>
+    <array name="east_west_img">
+        <item>@drawable/ashby</item>
+        <item>@drawable/avondale</item>
+        <item>@drawable/bankhead</item>
+        <item>@drawable/decatur</item>
+        <item>@drawable/east_lake</item>
+        <item>@drawable/candler_park</item>
+        <item>@drawable/five_points</item>
+        <item>@drawable/georgia_state</item>
+        <item>@drawable/hamilton</item>
+        <item>@drawable/indian_creek</item>
+        <item>@drawable/inman_park</item>
+        <item>@drawable/kensington</item>
+        <item>@drawable/king_memorial</item>
+        <item>@drawable/dome</item>
+        <item>@drawable/vine_city</item>
+        <item>@drawable/west_lake</item>
+    </array>
 </resources>
