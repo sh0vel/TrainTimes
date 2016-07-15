@@ -3,6 +3,7 @@ package com.app.shovonh.traintimes;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
  * A placeholder fragment containing a simple view.
  */
 public class TopTrainsFragment extends Fragment {
+
     //TODO: if no upcoming trains, display a message
 
     private static final String ARG_STATION_NAME = "param1";
@@ -33,6 +35,7 @@ public class TopTrainsFragment extends Fragment {
     public static TopTrainsFragment newInstance(String stationName) {
         TopTrainsFragment fragment = new TopTrainsFragment();
         Bundle args = new Bundle();
+        Log.v(LOG_TAG, "New Instance: " + stationName);
         args.putString(ARG_STATION_NAME, stationName);
         fragment.setArguments(args);
         return fragment;
@@ -49,9 +52,12 @@ public class TopTrainsFragment extends Fragment {
 
 
         if (getArguments() != null) {
+            Log.v(LOG_TAG, "Args: " + getArguments().getString(ARG_STATION_NAME));
             STATION_NAME = getArguments().getString(ARG_STATION_NAME);
             upcomingTrains = Utilities.getRelevantStations(STATION_NAME);
+
         }
+        Log.v(LOG_TAG, "onCreateView " + STATION_NAME);
         View view = inflater.inflate(R.layout.fragment_top_trains, container, false);
         LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.train_container);
         LinearLayout.LayoutParams lp =
@@ -85,11 +91,11 @@ public class TopTrainsFragment extends Fragment {
         return view;
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-
-        outState.putString(ARG_STATION_NAME, STATION_NAME);
-
-        super.onSaveInstanceState(outState);
-    }
+//    @Override
+//    public void onSaveInstanceState(Bundle outState) {
+//
+//        outState.putString(ARG_STATION_NAME, STATION_NAME);
+//
+//        super.onSaveInstanceState(outState);
+//    }
 }

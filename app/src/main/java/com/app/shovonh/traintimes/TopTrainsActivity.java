@@ -27,8 +27,11 @@ import java.util.Locale;
 public class TopTrainsActivity extends AppCompatActivity {
     public static final String LOG_TAG = TopTrainsActivity.class.getSimpleName();
     public static final String EXTRA_SCROLL_TO_LAST = "scroll";
+    public static final String EXTRA_DELETED = "delete";
+    public static final String EXTRA_DELETED_TAB = "tabnum";
     boolean scrollToLast = false;
     boolean safeToRefreshOnResume;
+    boolean stationDeleted;
 
     ArrayList<String> savedStationNames;
     ViewPager viewPager;
@@ -47,19 +50,12 @@ public class TopTrainsActivity extends AppCompatActivity {
         Log.v(LOG_TAG, "onCreate");
         dbHelper = new DBHelper(this);
         safeToRefreshOnResume = false;
-
-        //ondelete scroll back one
-        if (savedStationNames == null) {
-            savedStationNames = dbHelper.getAllStations();
-        }
-
+        stationDeleted = getIntent().getBooleanExtra(EXTRA_DELETED, false);
         //if internet is connected{
-
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Upcoming Trains");
-
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
         if (fab != null) {
@@ -71,58 +67,71 @@ public class TopTrainsActivity extends AppCompatActivity {
                 }
             });
         }
-
         wheel = (ProgressWheel) findViewById(R.id.progress_wheel);
         wheel.setCircleRadius(75);
         wheel.setVisibility(View.INVISIBLE);
-        FetchTrainTimes fetchTrainTimes = new FetchTrainTimes(new FetchTrainTimes.fetchListener() {
-            @Override
-            public void onFetchStarted() {
-                //start spinner
 
-                fab.hide();
-                wheel.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onFetchCompete() {
-                wheel.setVisibility(View.INVISIBLE);
-                fab.show();
-                viewPager = (ViewPager) findViewById(R.id.pager_top);
-                setupViewPager(viewPager);
-
-                tabs = (TabLayout) findViewById(R.id.tabs_scrolling);
-                if (tabs != null)
-                    tabs.setupWithViewPager(viewPager);
-
-                scrollToLast = getIntent().getBooleanExtra(EXTRA_SCROLL_TO_LAST, false);
-                if (scrollToLast) {
-                    tab = tabs.getTabAt(tabs.getTabCount() - 1);
-                    tab.select();
-                    getIntent().putExtra(EXTRA_SCROLL_TO_LAST, false);
+        if (!stationDeleted) {
+            FetchTrainTimes fetchTrainTimes = new FetchTrainTimes(new FetchTrainTimes.fetchListener() {
+                @Override
+                public void onFetchStarted() {
+                    fab.hide();
+                    wheel.setVisibility(View.VISIBLE);
                 }
-            }
-        });
-        fetchTrainTimes.execute();
-        //} else no internet activity
 
+                @Override
+                public void onFetchCompete() {
+                    wheel.setVisibility(View.INVISIBLE);
+                    fab.show();
+                    setup();
+                }
+            });
+            fetchTrainTimes.execute();
+            //} else no internet activity
+        }else{
+            setup();
+        }
+
+    }
+
+    private void setup(){
+        viewPager = (ViewPager) findViewById(R.id.pager_top);
+        setupViewPager(viewPager);
+
+        tabs = (TabLayout) findViewById(R.id.tabs_scrolling);
+        if (tabs != null)
+            tabs.setupWithViewPager(viewPager);
+
+        scrollToLast = getIntent().getBooleanExtra(EXTRA_SCROLL_TO_LAST, false);
+        if (scrollToLast) {
+            tab = tabs.getTabAt(tabs.getTabCount() - 1);
+            tab.select();
+            getIntent().putExtra(EXTRA_SCROLL_TO_LAST, false);
+        }
+        if (stationDeleted){
+           int deletedTab = getIntent().getIntExtra(EXTRA_DELETED_TAB, -1);
+            if (!(deletedTab < 0) && deletedTab != 0){
+                tab = tabs.getTabAt(deletedTab - 1);
+                        tab.select();
+            }
+        }
     }
 
     private void setupViewPager(ViewPager viewPager) {
         safeToRefreshOnResume = false;
+        savedStationNames = dbHelper.getAllStations();
         adapter = new Adapter(getSupportFragmentManager());
         for (String name : savedStationNames) {
+            Log.v(LOG_TAG, "setUpViewPager: " + name);
             adapter.addFragment(TopTrainsFragment.newInstance(name), name);
         }
         viewPager.setAdapter(adapter);
     }
 
 
-    static class Adapter extends FragmentPagerAdapter {
+     class Adapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
         private final List<String> mFragmentTitleList = new ArrayList<>();
-
-        private long baseId = 0;
 
         public Adapter(FragmentManager manager) {
             super(manager);
@@ -137,6 +146,9 @@ public class TopTrainsActivity extends AppCompatActivity {
         public void removeFragments(int i){
             mFragmentList.remove(i);
             mFragmentTitleList.remove(i);
+            savedStationNames = dbHelper.getAllStations();
+            notifyDataSetChanged();
+            Log.v(LOG_TAG, "RemoveFragments " + mFragmentTitleList);
         }
 
         @Override
@@ -156,7 +168,6 @@ public class TopTrainsActivity extends AppCompatActivity {
 
         @Override
         public int getItemPosition(Object object) {
-            // POSITION_NONE makes it possible to reload the PagerAdapter
             return POSITION_NONE;
         }
     }
@@ -194,10 +205,19 @@ public class TopTrainsActivity extends AppCompatActivity {
                     startActivity(intent);
                     finish();
                 }else {
-                    viewPager.getAdapter().notifyDataSetChanged();
-                    if (currentTab != 0 )
-                        tab = tabs.getTabAt(currentTab - 1);
-                    tab.select();
+//                   viewPager.getAdapter().notifyDataSetChanged();
+                    Intent intent = getIntent();
+                    intent.putExtra(EXTRA_DELETED, true);
+                    intent.putExtra(EXTRA_DELETED_TAB, currentTab);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                    startActivity(intent);
+                    finish();
+
+//                    if (currentTab != 0 ) {
+//                        tab = tabs.getTabAt(currentTab - 1);
+//                        tab.select();
+//                    }
+
                 }
                 break;
             case R.id.action_refresh:
@@ -214,38 +234,38 @@ public class TopTrainsActivity extends AppCompatActivity {
         FetchTrainTimes fetchTrainTimes = new FetchTrainTimes(new FetchTrainTimes.fetchListener() {
             @Override
             public void onFetchStarted() {
-                //start spinner
                 fab.hide();
                 wheel.setVisibility(View.VISIBLE);
             }
 
             @Override
             public void onFetchCompete() {
-                //stop spinner
-                wheel.setVisibility(View.INVISIBLE);
                 fab.show();
-                List<Fragment> fragments = adapter.mFragmentList;
-                List<String> names = adapter.mFragmentTitleList;
-                int currentTab = tabs.getSelectedTabPosition();
-                //if first or last
-                //update 2 of them
-                if (fragments.size() > 2) {
-                    if (currentTab == 0) {
-                        fragments.set(0, TopTrainsFragment.newInstance(names.get(0)));
-                        fragments.set(1, TopTrainsFragment.newInstance(names.get(1)));
-                    } else if (currentTab == fragments.size() - 1) {
-                        fragments.set(fragments.size() - 1, TopTrainsFragment.newInstance(names.get(fragments.size() - 1)));
-                        fragments.set(fragments.size() - 2, TopTrainsFragment.newInstance(names.get(fragments.size() - 1)));
-                    } else {
-                        //else update 3
-                        fragments.set(tabs.getSelectedTabPosition(), TopTrainsFragment.newInstance(names.get(tabs.getSelectedTabPosition())));
-                        fragments.set(tabs.getSelectedTabPosition() - 1, TopTrainsFragment.newInstance(names.get(tabs.getSelectedTabPosition() - 1)));
-                        fragments.set(tabs.getSelectedTabPosition() + 1, TopTrainsFragment.newInstance(names.get(tabs.getSelectedTabPosition() + 1)));
-                    }
-                } else {
-                    fragments.set(0, TopTrainsFragment.newInstance(names.get(0)));
-                    //fragments.set(1, TopTrainsFragment.newInstance(names.get(1)));
-                }
+                wheel.setVisibility(View.INVISIBLE);
+//                List<Fragment> fragments = adapter.mFragmentList;
+//                List<String> names = adapter.mFragmentTitleList;
+//                Log.v(LOG_TAG, "refresh: " + names);
+//                int currentTab = tabs.getSelectedTabPosition();
+//                //if first or last
+//                //update 2 of them
+//                if (fragments.size() > 1) {
+//                    if (currentTab == 0) {
+//                        fragments.set(0, TopTrainsFragment.newInstance(names.get(0)));
+//                        fragments.set(1, TopTrainsFragment.newInstance(names.get(1)));
+//                    } else if (currentTab == fragments.size() - 1) {
+//                        fragments.set(fragments.size() - 1, TopTrainsFragment.newInstance(names.get(fragments.size() - 1)));
+//                        fragments.set(fragments.size() - 2, TopTrainsFragment.newInstance(names.get(fragments.size() - 2)));
+//                    } else {
+//                        //else update 3
+//                        fragments.set(tabs.getSelectedTabPosition(), TopTrainsFragment.newInstance(names.get(tabs.getSelectedTabPosition())));
+//                        fragments.set(tabs.getSelectedTabPosition() - 1, TopTrainsFragment.newInstance(names.get(tabs.getSelectedTabPosition() - 1)));
+//                        fragments.set(tabs.getSelectedTabPosition() + 1, TopTrainsFragment.newInstance(names.get(tabs.getSelectedTabPosition() + 1)));
+//                    }
+//                } else {
+//
+//                    fragments.set(0, TopTrainsFragment.newInstance(names.get(0)));
+//                    //fragments.set(1, TopTrainsFragment.newInstance(names.get(1)));
+//                }
                 viewPager.getAdapter().notifyDataSetChanged();
             }
 
