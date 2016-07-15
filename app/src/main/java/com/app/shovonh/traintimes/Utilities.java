@@ -2,6 +2,8 @@ package com.app.shovonh.traintimes;
 
 import android.content.Context;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
@@ -175,6 +177,14 @@ public class Utilities {
 
         return sqrtOfSum;
     }
-
+    public static boolean hasConnection(Context context) {
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+        if (networkInfo != null) {
+            return networkInfo.isConnected();
+        }
+        return false;
+    }
 
 }

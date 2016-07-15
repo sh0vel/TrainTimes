@@ -48,10 +48,13 @@ public class TopTrainsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_top_trains);
         Log.v(LOG_TAG, "onCreate");
+        Log.v(LOG_TAG, "" + Utilities.hasConnection(this));
+
+
         dbHelper = new DBHelper(this);
         safeToRefreshOnResume = false;
         stationDeleted = getIntent().getBooleanExtra(EXTRA_DELETED, false);
-        //if internet is connected{
+
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -71,30 +74,36 @@ public class TopTrainsActivity extends AppCompatActivity {
         wheel.setCircleRadius(75);
         wheel.setVisibility(View.INVISIBLE);
 
-        if (!stationDeleted) {
-            FetchTrainTimes fetchTrainTimes = new FetchTrainTimes(new FetchTrainTimes.fetchListener() {
-                @Override
-                public void onFetchStarted() {
-                    fab.hide();
-                    wheel.setVisibility(View.VISIBLE);
-                }
 
-                @Override
-                public void onFetchCompete() {
-                    wheel.setVisibility(View.INVISIBLE);
-                    fab.show();
-                    setup();
-                }
-            });
-            fetchTrainTimes.execute();
-            //} else no internet activity
-        }else{
+        if (!stationDeleted) {
+            if (Utilities.hasConnection(this)) {
+                FetchTrainTimes fetchTrainTimes = new FetchTrainTimes(new FetchTrainTimes.fetchListener() {
+                    @Override
+                    public void onFetchStarted() {
+                        fab.hide();
+                        wheel.setVisibility(View.VISIBLE);
+                    }
+
+                    @Override
+                    public void onFetchCompete() {
+                        wheel.setVisibility(View.INVISIBLE);
+                        fab.show();
+                        setup();
+                    }
+                });
+                fetchTrainTimes.execute();
+            } else {
+                Intent intent = new Intent(this, NoInternetActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        } else {
             setup();
         }
 
     }
 
-    private void setup(){
+    private void setup() {
         viewPager = (ViewPager) findViewById(R.id.pager_top);
         setupViewPager(viewPager);
 
@@ -108,11 +117,11 @@ public class TopTrainsActivity extends AppCompatActivity {
             tab.select();
             getIntent().putExtra(EXTRA_SCROLL_TO_LAST, false);
         }
-        if (stationDeleted){
-           int deletedTab = getIntent().getIntExtra(EXTRA_DELETED_TAB, -1);
-            if (!(deletedTab < 0) && deletedTab != 0){
+        if (stationDeleted) {
+            int deletedTab = getIntent().getIntExtra(EXTRA_DELETED_TAB, -1);
+            if (!(deletedTab < 0) && deletedTab != 0) {
                 tab = tabs.getTabAt(deletedTab - 1);
-                        tab.select();
+                tab.select();
             }
         }
     }
@@ -122,14 +131,13 @@ public class TopTrainsActivity extends AppCompatActivity {
         savedStationNames = dbHelper.getAllStations();
         adapter = new Adapter(getSupportFragmentManager());
         for (String name : savedStationNames) {
-            Log.v(LOG_TAG, "setUpViewPager: " + name);
             adapter.addFragment(TopTrainsFragment.newInstance(name), name);
         }
         viewPager.setAdapter(adapter);
     }
 
 
-     class Adapter extends FragmentPagerAdapter {
+    class Adapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
         private final List<String> mFragmentTitleList = new ArrayList<>();
 
@@ -143,7 +151,7 @@ public class TopTrainsActivity extends AppCompatActivity {
 
         }
 
-        public void removeFragments(int i){
+        public void removeFragments(int i) {
             mFragmentList.remove(i);
             mFragmentTitleList.remove(i);
             savedStationNames = dbHelper.getAllStations();
@@ -200,11 +208,11 @@ public class TopTrainsActivity extends AppCompatActivity {
                 String d = adapter.getPageTitle(currentTab).toString();
                 dbHelper.deleteEntry(d);
                 adapter.removeFragments(currentTab);
-                if (adapter.getCount() == 0){
+                if (adapter.getCount() == 0) {
                     Intent intent = new Intent(this, AllTrainsActivity.class);
                     startActivity(intent);
                     finish();
-                }else {
+                } else {
 //                   viewPager.getAdapter().notifyDataSetChanged();
                     Intent intent = getIntent();
                     intent.putExtra(EXTRA_DELETED, true);
@@ -226,8 +234,6 @@ public class TopTrainsActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
-
 
 
     private void refreshTimes() {

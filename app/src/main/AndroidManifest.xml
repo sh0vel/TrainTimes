@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.app.shovonh.traintimes">
+    package="com.app.shovonh.traintimes"
+    android:installLocation="internalOnly">
+
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -21,12 +24,13 @@
         </activity>
         <activity
             android:name=".TopTrainsActivity"
-            android:label="@string/title_activity_top_trains"></activity>
+            android:label="@string/title_activity_top_trains" />
         <activity
             android:name=".AllTrainsActivity"
             android:label="@string/title_activity_all_trains"
             android:theme="@style/AppTheme" />
-        <activity android:name=".MartaMapActivity"></activity>
+        <activity android:name=".MartaMapActivity" />
+        <activity android:name=".NoInternetActivity"></activity>
     </application>
 
 </manifest>
